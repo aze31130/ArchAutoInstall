@@ -6,6 +6,7 @@ username="aze"
 password="aze"
 root_password="root"
 test_server="1.1.1.1"
+disk_device="/dev/sda"
 ultra_minimalist=1
 #############
 
@@ -17,7 +18,9 @@ if ! ping -c 1 $test_server 1>/dev/null; then
     exit 1
 fi
 
-# 2 uses cfdisk to create partition
+# Step 2: Create 3 partitions (Swap, Bootloader, Filesystem)
+parted -s $disk_device mklabel gpt mkpart primary linux-swap 1MiB 4GiB mkpart primary ext2 4GiB 4.5GiB mkpart primary ext4 4.5GiB 100%
+
 
 # 3 mkfs on /dev/sda1
 

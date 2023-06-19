@@ -21,19 +21,30 @@ fi
 # Step 2: Create 3 partitions (Swap, Bootloader, Filesystem)
 parted -s $disk_device mklabel gpt mkpart primary linux-swap 1MiB 4GiB mkpart primary ext2 4GiB 4.5GiB mkpart primary ext4 4.5GiB 100%
 
+# At this point, the disk will look like that:
+# /dev/sda1 (4G Swap partition)
+# /dev/sda2 (512M Bootloader partition)
+# /dev/sda3 (All the remaining root filesystem parition)
 
-# 3 mkfs on /dev/sda1
+# Step 3: Create file systems
+mkswap /dev/sda1
+mkfs.ext4 /dev/sda3
 
-# 4 mount /dev/sda1 on /mnt
+# Step 4: Mount root filesystem into on /mnt
+swapon /dev/sda1
+mount /dev/sda3 /mnt
 
-# 5 configure pacman (update keyring, parallel download, ILoveCandy)
+# Step 5: configure pacman (update keyring, parallel download, ILoveCandy)
+# Enable parallel download
+sed '/ParallelDownloads/s/#//g' /etc/pacman.conf
+pacstrap /mnt base linux
 
-# 6 Download essentials packages (base, linux)
+# Step 6: Generate fstab
+genfstab /mnt>/mnt/etc/fstab
 
-# 7 Generate fstab
+# Step 7: Chroot into /mnt and install bootloader
+arch-chroot /mnt bash -c 'pacman -Sy grub;grub-install /dev/sda;grub-mkconfig -o /boot/grub/grub.cfg'
 
-# 8 Chroot into /mnt
+# Step 8 Download essentials packages
 
-# 9 Install bootloader
-
-# 10 Reboot
+# Step 9 Reboot

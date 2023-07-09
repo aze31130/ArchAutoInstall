@@ -28,6 +28,7 @@ parted -s $disk_device mklabel gpt mkpart primary linux-swap 1MiB 4GiB mkpart pr
 
 # Step 3: Create file systems
 mkswap /dev/sda1
+mkfs.fat /dev/sda2
 mkfs.ext4 /dev/sda3
 
 # Step 4: Mount root filesystem into on /mnt

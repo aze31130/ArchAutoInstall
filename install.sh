@@ -33,7 +33,7 @@ mkfs.ext4 /dev/sda3
 
 # Step 4: Mount root filesystem into on /mnt
 swapon /dev/sda1
-mount /dev/sda2 /boot
+mount /dev/sda2 /mnt/boot
 mount /dev/sda3 /mnt
 
 # Step 5: configure pacman (update keyring, parallel download, ILoveCandy)

@@ -19,7 +19,7 @@ if ! ping -c 1 $test_server 1>/dev/null; then
 fi
 
 # Step 2: Create 3 partitions (Swap, Bootloader, Filesystem)
-parted -s $disk_device mklabel gpt mkpart primary linux-swap 1MiB 4GiB mkpart primary ext2 4GiB 4.5GiB mkpart primary ext4 4.5GiB 100%
+parted -s $disk_device mklabel gpt mkpart primary linux-swap 1MiB 4GiB mkpart primary fat32 4GiB 4.5GiB mkpart primary ext4 4.5GiB 100%
 
 # At this point, the disk will look like that:
 # /dev/sda1 (4G Swap partition)
@@ -32,11 +32,12 @@ mkfs.ext4 /dev/sda3
 
 # Step 4: Mount root filesystem into on /mnt
 swapon /dev/sda1
+mount /dev/sda2 /boot
 mount /dev/sda3 /mnt
 
 # Step 5: configure pacman (update keyring, parallel download, ILoveCandy)
 # Enable parallel download
-sed '/ParallelDownloads/s/#//g' /etc/pacman.conf
+sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 pacstrap /mnt base linux
 
 # Step 6: Generate fstab
